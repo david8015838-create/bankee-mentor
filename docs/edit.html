@@ -35,14 +35,16 @@
         <h2>知識庫編輯器</h2>
         <div>
           <button id="add-doc-btn">+ 新增文件</button>
-          <button id="export-btn">⬇ 匯出 knowledge.json</button>
+          <button id="commit-btn">💾 儲存到 GitHub</button>
+          <button id="github-settings-btn" class="secondary">🔑 GitHub Token</button>
+          <button id="export-btn" class="secondary">⬇ 匯出 JSON</button>
           <button id="logout-btn" class="secondary">登出</button>
         </div>
       </div>
 
       <p class="hint">
-        ⚠️ GitHub Pages 為靜態網站，無法直接寫入檔案。<br />
-        編輯後請點「匯出 knowledge.json」下載新檔，並提交到 GitHub repo 的 <code>docs/data/knowledge.json</code> 取代。
+        💡 設定 GitHub Token 後，按「💾 儲存到 GitHub」可直接 commit，網站約 1–2 分鐘自動更新。<br />
+        若不想用 Token，可改用「⬇ 匯出 JSON」下載後手動上傳到 repo。
       </p>
 
       <div class="editor-layout">
@@ -73,6 +75,28 @@
         </div>
       </div>
     </section>
+
+    <!-- GitHub Token Modal -->
+    <div id="gh-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>🔑 GitHub Personal Access Token</h2>
+        <p class="hint">
+          Token 只儲存在你的瀏覽器 localStorage，不會傳到任何伺服器。<br />
+          申請方式：<a href="https://github.com/settings/tokens?type=beta" target="_blank">github.com/settings/tokens</a><br />
+          權限只需要：<code>Contents: Read and write</code>（限定本 repo）
+        </p>
+        <label>
+          GitHub Token (ghp_... 或 github_pat_...)
+          <input type="password" id="gh-token-input" placeholder="貼上你的 token" />
+        </label>
+        <p class="hint">⚠️ 任何持有此 token 的人都能修改 repo，請勿外流。</p>
+        <div class="modal-actions">
+          <button id="gh-token-save">儲存</button>
+          <button id="gh-token-clear" class="secondary">清除</button>
+          <button id="gh-modal-close" class="secondary">關閉</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script src="js/edit.js"></script>

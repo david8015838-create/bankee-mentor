@@ -119,6 +119,97 @@
     selectDoc(newId);
   };
 
+  // ── GitHub direct commit ────────────────────────────────────────────────
+  const GH_TOKEN_KEY = "bankee_gh_token_v1";
+  const getToken = () => localStorage.getItem(GH_TOKEN_KEY) || "";
+  const setToken = (t) => localStorage.setItem(GH_TOKEN_KEY, t);
+  const clearToken = () => localStorage.removeItem(GH_TOKEN_KEY);
+
+  // UTF-8 safe base64 encoder
+  function utf8ToBase64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let bin = "";
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+  }
+
+  $("github-settings-btn").onclick = () => {
+    $("gh-token-input").value = getToken();
+    $("gh-modal").classList.remove("hidden");
+  };
+  $("gh-modal-close").onclick = () => $("gh-modal").classList.add("hidden");
+  $("gh-token-save").onclick = () => {
+    const t = $("gh-token-input").value.trim();
+    if (!t) return alert("請貼上 token");
+    setToken(t);
+    $("gh-modal").classList.add("hidden");
+    alert("✅ Token 已儲存");
+  };
+  $("gh-token-clear").onclick = () => {
+    if (confirm("確定清除 token？")) {
+      clearToken();
+      $("gh-token-input").value = "";
+      alert("已清除");
+    }
+  };
+
+  $("commit-btn").onclick = async () => {
+    const token = getToken();
+    if (!token) {
+      alert("請先設定 GitHub Token（按右上的 🔑 GitHub Token）");
+      return;
+    }
+    const gh = config.github;
+    if (!gh || !gh.owner || !gh.repo) {
+      alert("config.json 缺少 github 設定");
+      return;
+    }
+
+    const message = prompt("commit 訊息：", `更新知識庫 (${new Date().toISOString().slice(0,10)})`);
+    if (!message) return;
+
+    const btn = $("commit-btn");
+    btn.disabled = true;
+    btn.textContent = "上傳中…";
+
+    try {
+      const apiBase = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${gh.knowledge_path}`;
+      const headers = {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      };
+
+      // 1. Get current file SHA
+      const getRes = await fetch(`${apiBase}?ref=${gh.branch}`, { headers });
+      if (!getRes.ok) throw new Error(`取得檔案失敗 (${getRes.status}): ${await getRes.text()}`);
+      const fileInfo = await getRes.json();
+
+      // 2. PUT new content
+      knowledge.generated_at = new Date().toISOString().slice(0, 10);
+      const newContent = JSON.stringify(knowledge, null, 2);
+
+      const putRes = await fetch(apiBase, {
+        method: "PUT",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          content: utf8ToBase64(newContent),
+          sha: fileInfo.sha,
+          branch: gh.branch
+        })
+      });
+      if (!putRes.ok) throw new Error(`commit 失敗 (${putRes.status}): ${await putRes.text()}`);
+      const result = await putRes.json();
+      alert(`✅ 已 commit！\n\nCommit: ${result.commit.sha.slice(0,7)}\n\nGitHub Pages 約 1–2 分鐘後會自動更新網站。`);
+    } catch (err) {
+      alert("❌ " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "💾 儲存到 GitHub";
+    }
+  };
+
   $("export-btn").onclick = () => {
     const blob = new Blob([JSON.stringify(knowledge, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);

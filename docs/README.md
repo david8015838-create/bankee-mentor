@@ -58,13 +58,26 @@ API Key 存在使用者瀏覽器的 localStorage，**不會傳到任何伺服器
 
 ## 編輯知識庫的工作流
 
-GitHub Pages 是純靜態，網頁無法直接寫入檔案。所以編輯流程是：
+有兩種方式：
 
-1. 進入 `edit.html`，輸入密碼登入
-2. 編輯文件 → 儲存到記憶體
-3. 點「⬇ 匯出 knowledge.json」下載新檔
-4. 把下載的檔案取代 `docs/data/knowledge.json`
-5. commit + push → GitHub Pages 自動更新
+### 方法 A：直接 commit（推薦，需 GitHub Token）
+
+1. 申請 Personal Access Token：https://github.com/settings/tokens?type=beta
+   - Repository access：選 `bankee-mentor`
+   - Permissions → Repository → **Contents: Read and write**
+2. 進入 `edit.html` → 登入 → 按右上「🔑 GitHub Token」貼上 token
+3. 編輯文件 → 儲存到記憶體
+4. 按「💾 儲存到 GitHub」→ 自動 commit
+5. 等 1–2 分鐘 GitHub Pages 自動更新
+
+> ⚠️ Token 存在瀏覽器 localStorage，等同密碼，**勿外流**。
+> 任何人拿到 token 都能修改你的 repo。建議用 fine-grained token 並只授權單一 repo。
+
+### 方法 B：手動下載上傳
+
+1. 編輯後按「⬇ 匯出 JSON」下載
+2. 取代 repo 中的 `docs/data/knowledge.json`
+3. commit + push
 
 ## 預設 AI 設定
 
