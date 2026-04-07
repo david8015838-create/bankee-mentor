@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bankee 新人 Mentor</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🦞 Bankee 新人 Mentor</div>
+    <nav>
+      <a href="index.html" class="active">問答</a>
+      <a href="edit.html">編輯知識庫</a>
+      <button id="settings-btn" class="link-btn">⚙ 設定</button>
+    </nav>
+  </header>
+
+  <main class="chat-container">
+    <div id="notice" class="notice">
+      👋 嗨，歡迎加入 Bankee！我是你的新人 mentor，有任何工作流程或產品問題都可以問我。<br />
+      <small id="data-as-of"></small>
+    </div>
+
+    <div id="messages" class="messages"></div>
+
+    <form id="chat-form" class="chat-form">
+      <textarea id="input" placeholder="輸入問題，例如：跨行轉帳免費幾次？" rows="2" required></textarea>
+      <button type="submit" id="send-btn">送出</button>
+    </form>
+  </main>
+
+  <!-- 設定 Modal -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>設定</h2>
+      <label>
+        AI 服務商
+        <select id="provider-select"></select>
+      </label>
+      <label>
+        模型
+        <select id="model-select"></select>
+      </label>
+      <label>
+        API Key
+        <input type="password" id="apikey-input" placeholder="貼上你的 API Key" />
+      </label>
+      <p class="hint" id="apikey-hint"></p>
+      <div class="modal-actions">
+        <button id="settings-save">儲存</button>
+        <button id="settings-close" class="secondary">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/gemini.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

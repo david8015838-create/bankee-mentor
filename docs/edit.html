@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>編輯知識庫 - Bankee Mentor</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🦞 Bankee 新人 Mentor</div>
+    <nav>
+      <a href="index.html">問答</a>
+      <a href="edit.html" class="active">編輯知識庫</a>
+    </nav>
+  </header>
+
+  <main class="edit-container">
+    <!-- 登入畫面 -->
+    <section id="login-section">
+      <h2>編輯知識庫需要密碼</h2>
+      <form id="login-form">
+        <label>
+          密碼
+          <input type="password" id="password-input" required autofocus />
+        </label>
+        <button type="submit">登入</button>
+      </form>
+      <p id="login-error" class="error hidden">密碼錯誤</p>
+    </section>
+
+    <!-- 編輯介面 -->
+    <section id="editor-section" class="hidden">
+      <div class="editor-header">
+        <h2>知識庫編輯器</h2>
+        <div>
+          <button id="add-doc-btn">+ 新增文件</button>
+          <button id="export-btn">⬇ 匯出 knowledge.json</button>
+          <button id="logout-btn" class="secondary">登出</button>
+        </div>
+      </div>
+
+      <p class="hint">
+        ⚠️ GitHub Pages 為靜態網站，無法直接寫入檔案。<br />
+        編輯後請點「匯出 knowledge.json」下載新檔，並提交到 GitHub repo 的 <code>docs/data/knowledge.json</code> 取代。
+      </p>
+
+      <div class="editor-layout">
+        <aside class="doc-list">
+          <h3>文件列表</h3>
+          <ul id="doc-list-ul"></ul>
+        </aside>
+
+        <div class="doc-editor">
+          <div id="no-selection" class="placeholder">← 從左側選一份文件來編輯</div>
+          <form id="doc-form" class="hidden">
+            <label>ID <input type="text" id="doc-id" required /></label>
+            <label>標題 <input type="text" id="doc-title" required /></label>
+            <label>領域 <input type="text" id="doc-domain" required /></label>
+            <label>版本 <input type="text" id="doc-version" required /></label>
+            <label>資料時效 <input type="date" id="doc-data-as-of" required /></label>
+            <label>來源 (每行一個 URL)
+              <textarea id="doc-sources" rows="3"></textarea>
+            </label>
+            <label>內容 (Markdown)
+              <textarea id="doc-content" rows="20" required></textarea>
+            </label>
+            <div class="form-actions">
+              <button type="submit">儲存變更（記憶體中）</button>
+              <button type="button" id="delete-doc-btn" class="danger">刪除此文件</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/edit.js"></script>
+</body>
+</html>
