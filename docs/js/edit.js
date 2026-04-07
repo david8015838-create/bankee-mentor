@@ -220,6 +220,103 @@
     URL.revokeObjectURL(url);
   };
 
+  // ── AI 口語編輯 ─────────────────────────────────────────────────────────
+  const SETTINGS_KEY_CHAT = "bankee_mentor_settings_v1";
+  function getChatSettings() {
+    try { return JSON.parse(localStorage.getItem(SETTINGS_KEY_CHAT)) || {}; } catch { return {}; }
+  }
+
+  $("ai-apply-btn").onclick = async () => {
+    if (!selectedId) return alert("請先選一份文件");
+    const instruction = $("ai-instruction").value.trim();
+    if (!instruction) return alert("請描述要修改什麼");
+
+    const chatSettings = getChatSettings();
+    if (!chatSettings.apiKey) {
+      alert("請先到問答頁右上角設定 Gemini API Key");
+      return;
+    }
+
+    // Snapshot current form state (使用者可能在編輯但還沒儲存)
+    const currentDoc = {
+      id: $("doc-id").value.trim(),
+      title: $("doc-title").value.trim(),
+      domain: $("doc-domain").value.trim(),
+      version: $("doc-version").value.trim(),
+      data_as_of: $("doc-data-as-of").value,
+      sources: $("doc-sources").value.split("\n").map(s => s.trim()).filter(Boolean),
+      content: $("doc-content").value
+    };
+
+    const btn = $("ai-apply-btn");
+    btn.disabled = true;
+    btn.textContent = "AI 修改中…";
+
+    try {
+      const systemPrompt = `你是文件編輯助理。使用者會給你一份 JSON 格式的知識庫文件，以及一段口語的修改指令。
+你的任務是依照指令修改文件，並**只回傳完整的修改後 JSON**，不要包含任何說明文字、不要用 markdown code fence。
+
+規則：
+1. 嚴格保持 JSON 結構：必須含 id, title, domain, version, data_as_of, sources, content 七個欄位
+2. 不修改 id（除非使用者明確要求）
+3. content 為 markdown 字串，使用 \\n 換行
+4. 若使用者要求新增/修改內容，請保持原有風格與格式
+5. 若使用者要求改數字、改文字、加段落，只動需要動的部分
+6. data_as_of 若內容有更新，也請更新為今天日期 ${new Date().toISOString().slice(0,10)}
+7. 回傳必須是合法 JSON，可被 JSON.parse 解析`;
+
+      const userMsg = `當前文件：
+\`\`\`json
+${JSON.stringify(currentDoc, null, 2)}
+\`\`\`
+
+修改指令：
+${instruction}
+
+請回傳修改後的完整 JSON。`;
+
+      const reply = await GeminiClient.chat({
+        apiKey: chatSettings.apiKey,
+        model: chatSettings.model || "gemini-2.5-flash",
+        systemInstruction: systemPrompt,
+        history: [],
+        userMessage: userMsg
+      });
+
+      // Parse JSON (strip possible code fence)
+      let cleaned = reply.trim();
+      cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+      let updated;
+      try {
+        updated = JSON.parse(cleaned);
+      } catch (e) {
+        throw new Error("AI 回傳格式無法解析。原始回覆：\n\n" + reply.slice(0, 500));
+      }
+
+      // Validate required fields
+      const required = ["id", "title", "domain", "version", "data_as_of", "content"];
+      for (const f of required) {
+        if (!(f in updated)) throw new Error(`AI 回傳缺少欄位：${f}`);
+      }
+
+      // Fill form (不直接存進 knowledge，讓使用者按「儲存變更」確認)
+      $("doc-id").value = updated.id;
+      $("doc-title").value = updated.title;
+      $("doc-domain").value = updated.domain;
+      $("doc-version").value = updated.version;
+      $("doc-data-as-of").value = updated.data_as_of;
+      $("doc-sources").value = (updated.sources || []).join("\n");
+      $("doc-content").value = updated.content;
+      $("ai-instruction").value = "";
+      alert("✨ AI 已修改完成。請檢查內容後按「儲存變更」確認，再按「💾 儲存到 GitHub」上傳。");
+    } catch (err) {
+      alert("❌ " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "🪄 讓 AI 修改";
+    }
+  };
+
   $("logout-btn").onclick = logout;
 
   // Auto-resume session

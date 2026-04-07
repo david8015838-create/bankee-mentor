@@ -187,3 +187,21 @@ button.danger:hover { background: #d97706; }
 }
 #doc-form textarea { font-family: 'SF Mono', Monaco, Consolas, monospace; font-size: 13px; }
 .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+.ai-edit-box {
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+.ai-edit-label { font-weight: 600; color: #92400e; display: block; margin-bottom: 6px; }
+#ai-instruction {
+  width: 100%; padding: 8px 12px;
+  border: 1px solid #fcd34d; border-radius: 6px;
+  font-size: 14px; font-family: inherit; resize: vertical;
+}
+#ai-apply-btn { margin-top: 8px; background: #f59e0b; }
+#ai-apply-btn:hover { background: #d97706; }
+#ai-apply-btn:disabled { background: #9ca3af; }
+.ai-edit-box .hint { color: #92400e; }

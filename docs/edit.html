@@ -56,6 +56,16 @@
         <div class="doc-editor">
           <div id="no-selection" class="placeholder">← 從左側選一份文件來編輯</div>
           <form id="doc-form" class="hidden">
+            <div class="ai-edit-box">
+              <label class="ai-edit-label">
+                ✨ AI 編輯助手（用口語描述要改什麼）
+              </label>
+              <textarea id="ai-instruction" rows="2"
+                placeholder="例如：把跨行轉帳次數改成 7 次；或：在常見問題加一條 Q&A 說明利息何時入帳"></textarea>
+              <button type="button" id="ai-apply-btn">🪄 讓 AI 修改</button>
+              <p class="hint">需先在問答頁設定 Gemini API Key。AI 修改後請務必檢查再儲存。</p>
+            </div>
+            <hr/>
             <label>ID <input type="text" id="doc-id" required /></label>
             <label>標題 <input type="text" id="doc-title" required /></label>
             <label>領域 <input type="text" id="doc-domain" required /></label>
@@ -99,6 +109,7 @@
     </div>
   </main>
 
+  <script src="js/gemini.js"></script>
   <script src="js/edit.js"></script>
 </body>
 </html>
