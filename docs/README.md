@@ -62,16 +62,35 @@ API Key 存在使用者瀏覽器的 localStorage，**不會傳到任何伺服器
 
 ### 方法 A：直接 commit（推薦，需 GitHub Token）
 
-1. 申請 Personal Access Token：https://github.com/settings/tokens?type=beta
-   - Repository access：選 `bankee-mentor`
-   - Permissions → Repository → **Contents: Read and write**
-2. 進入 `edit.html` → 登入 → 按右上「🔑 GitHub Token」貼上 token
-3. 編輯文件 → 儲存到記憶體
+#### 申請 fine-grained token（只能動本 repo，不會碰到其他 repo）
+
+1. 進入 https://github.com/settings/tokens?type=beta
+2. 點 **Generate new token**
+3. 填寫：
+   - **Token name**：`bankee-mentor-editor`
+   - **Expiration**：建議 90 天
+   - **Repository access** → 選 **Only select repositories** → 只勾 `bankee-mentor`
+   - **Permissions** → **Repository permissions** → 找到 **Contents** → 設為 **Read and write**
+   - 其他權限全部維持 **No access**
+4. 點最下方 **Generate token** → 複製 `github_pat_...`
+
+這個 token 的能力只有：
+- ✅ 讀寫 `bankee-mentor` 的檔案
+- ❌ 無法存取你任何其他 repo
+- ❌ 無法改設定、刪 repo、管理協作者、動 issues / PRs / Actions
+
+#### 使用
+
+1. 進入 `edit.html` → 輸入密碼登入
+2. 按右上「🔑 GitHub Token」貼上 token
+3. 編輯文件 → 按「儲存變更」
 4. 按「💾 儲存到 GitHub」→ 自動 commit
 5. 等 1–2 分鐘 GitHub Pages 自動更新
 
-> ⚠️ Token 存在瀏覽器 localStorage，等同密碼，**勿外流**。
-> 任何人拿到 token 都能修改你的 repo。建議用 fine-grained token 並只授權單一 repo。
+> ⚠️ Token 存在瀏覽器 localStorage。即便範圍受限，仍建議：
+> - 設定到期日（90 天）並定期更換
+> - 多位編輯者請各自申請自己的 token，**不要共用**
+> - 共用電腦使用後記得進編輯頁按 🔑 → 「清除」
 
 ### 方法 B：手動下載上傳
 
